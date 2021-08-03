@@ -18,12 +18,12 @@ Registered Sources:
 The standard NuGet feed should come configured on your system when installing the .NET SDK. If you want to configure the WebSharper GitHub feed, you can do so as follows:
 
 ```text
-ddf
+> dotnet nuget add source https://nuget.pkg.github.com/dotnet-websharper/index.json --name dotnet-websharper-GitHub --username <GH_USER> --password <PAT>
 ```
 
-### Checking for the latest WebSharper and other versions
+where `GH_USER` is your GitHub username, and `PAT` is your Personal Access Token \(PAT\) for your GitHub account.
 
-You 
+> At the time of writing, GitHub requires authentication to access packages on its Packages feed. To set your access up, create a new PAT at [https://github.com/settings/tokens/new](https://github.com/settings/tokens/new) with the `read:packages` scope, noting the expiration you configure.
 
 ### What's in packages
 

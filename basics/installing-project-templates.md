@@ -8,7 +8,7 @@ You can install the latest WebSharper project templates via the `dotnet` CLI:
 > dotnet new -i WebSharper.Templates
 ```
 
-> WebSharper templates are shipped as a NuGet package. If you need to install a particular version, you can add the version as a suffix, for instance `::5.0.0.53`.
+> WebSharper templates are shipped as a NuGet package. If you need to install a particular version, you can add the version as a suffix, for instance `::5.0.0.53-preview1`.
 
 Various WebSharper project templates are available for F\# and C\#. You can set the default language of your preference in your shell with:
 

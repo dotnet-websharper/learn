@@ -16,16 +16,19 @@ Project 'SPA01' has the following package references
     > WebSharper.UI              5.0.0.53-preview1   5.0.0.53-preview1
 ```
 
-You can check if an update is available:
+### Checking for the latest WebSharper and other package versions
+
+You can check if an update to a package is available by going directly to:
+
+* The standard NuGet feed for public releases: [https://www.nuget.org/packages?q=websharper](https://www.nuget.org/packages?q=websharper)
+* The GitHub package feed for beta releases: [https://github.com/orgs/dotnet-websharper/packages](https://github.com/orgs/dotnet-websharper/packages) 
+
+### Updating a WebSharper package
+
+You can update a given package via `dotnet`, for instance WebSharper itself:
 
 ```text
-> dotnet ..
-```
-
-And you can update each dependency via `dotnet`:
-
-```text
-> dotnet add reference  
+> dotnet add package WebSharper
 ```
 
 
