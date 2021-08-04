@@ -13,3 +13,11 @@
 * [Single-page applications \(SPAs\)](how-to.../single-page-applications-spas.md)
 * [Client-server applications](how-to.../client-server-applications.md)
 
+## Concepts
+
+* [Sitelets](concepts/sitelets.md)
+
+---
+
+* [The larger F\# web ecosystem](the-larger-f-web-ecosystem.md)
+

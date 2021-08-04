@@ -2,8 +2,10 @@
 
 Multi-page applications have multiple endpoints: pairs of HTTP verbs and paths, and are represented as an annotated **union type** we typically call `Endpoints`. The endpoints, as defined by this union type - given the various annotations on each union case - are mapped to content to be served using `Application.MultiPage`. Links to endpoints in your site can be calculated from the serving context, so you will never have invalid URLs.
 
+{% tabs %}
+{% tab title="Main.fs" %}
 ```fsharp
-module YourApp
+module Site
 
 open WebSharper
 open WebSharper.Sitelets
@@ -36,6 +38,8 @@ let Main =
             )
     )
 ```
+{% endtab %}
+{% endtabs %}
 
 [![](http://i.imgur.com/WMnmzIPm.png)](http://i.imgur.com/WMnmzIPl.png)
 
