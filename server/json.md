@@ -4,7 +4,7 @@ description: Construct JSON on the server or the client.
 
 # JSON
 
-WebSharper provides a convenient and readable JSON serialization format for F\# types \(and C\# classes\). The structure of the JSON is inferred from the type, and can be customized using attributes. This format is usable both from the server and the client side.
+WebSharper provides a convenient and readable JSON serialization format for F\# types \(and C\# classes\). The JSON structure is inferred from the type, and can be customized using attributes. This format is usable both from the server and the client side.
 
 ## Base types
 
@@ -217,4 +217,194 @@ Content.Json
 ```
 {% endtab %}
 {% endtabs %}
+
+## Optional fields
+
+Fields with type `option<'T>` are represented as a field that may or may not be there. This is the case both for unions and records.
+
+{% tabs %}
+{% tab title="Optional-fields" %}
+```fsharp
+[<NamedUnionCases>]
+type Contact =
+    | Address of street:string * zip:string * city:string option
+    | Email of email:string
+
+type User =
+    {
+        fullName: string
+        age: int option
+        contact: Contact
+    }
+
+Content.Json
+    [
+        {
+            fullName = "John Doe"
+            age = Some 42
+            contact = Address("12 Random St.", "15243", Some "Unknownville")
+        }
+        {
+            fullName = "Jane Doe"
+            age = None
+            contact = Address("53 Alea St.", "51423", None)
+        }
+    ]
+
+```
+{% endtab %}
+
+{% tab title="Output" %}
+```
+[
+    {"fullName": "John Doe",
+     "age": 42,
+     "contact":{"street": "12 Random St.",
+                "zip": "15243",
+                "city": "Unknownville"}},
+    {"fullName": "Jane Doe",
+     "contact":{"street": "53 Alea St.",
+                "zip": "51423"}}
+]
+```
+{% endtab %}
+{% endtabs %}
+
+ When parsing JSON, `null` is also accepted as a `None` value.
+
+### Constant cases
+
+Union cases annotated with the attribute `[<Constant "c">]` are represented as the corresponding constant, which can be a `string`, `int`, `float` or `bool`. It is recommended to only use this attribute on argument-less cases. If all cases of a union are annotated with `[<Constant>]`, then `[<NamedUnionCases>]` is not necessary.
+
+{% tabs %}
+{% tab title="Constant-cases" %}
+```fsharp
+type Color =
+    | [<Constant "blue">] Blue
+    | [<Constant "red">] Red
+    | [<Constant "green">] Green
+
+Content.Json [Blue; Red; Green]
+```
+{% endtab %}
+
+{% tab title="Output" %}
+```
+["blue","red","green"]
+```
+{% endtab %}
+{% endtabs %}
+
+## Classes
+
+In order to be serializable to/from JSON on the server-side, a class must be annotated with the `[<System.Serializable>]` attribute and must have a default constructor. On the client-side, these are not checked or required. Then, it is serialized based on its fields, similarly to [F\# records as mentioned above](json.md#records). Here is an example in C\#:
+
+{% tabs %}
+{% tab title="C\#" %}
+```csharp
+[Serializable]
+public class User
+{
+    Name name;
+    int age;
+    
+    public User() { }
+
+    public User(Name name, int age)
+    {
+        this.name = name;
+        this.age = age;
+    }
+}
+
+[Serializable]
+public class Name
+{
+    [Name("first-name")] string firstName;
+    string lastName;
+    
+    public Name() { }
+
+    public Name(string firstName, string lastName)
+    {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+}
+```
+{% endtab %}
+
+{% tab title="Query" %}
+```
+Content.Json (User(Name("John", "Doe"), 36))
+```
+{% endtab %}
+
+{% tab title="Output" %}
+```
+{"name": {"first-name": "John", "lastName": "Doe"}, "age": 36}
+```
+{% endtab %}
+{% endtabs %}
+
+## DateTimes
+
+Values of type `System.DateTime` are encoded using an ISO 8601 round-trip format string:
+
+{% tabs %}
+{% tab title="DateTime" %}
+```fsharp
+Content.Json System.DateTime.UtcNow
+```
+{% endtab %}
+
+{% tab title="Output" %}
+```
+"2015-03-06T17:05:19.2077851Z"
+```
+{% endtab %}
+{% endtabs %}
+
+The format can be customized with the `[<DateTimeFormat>]` attribute. This attribute can be placed either on a record field of type `System.DateTime` , or `option<System.DateTime>`, or on a union case with an argument of one of these types.
+
+{% tabs %}
+{% tab title="DateTime\#1" %}
+```fsharp
+open System
+
+type Action =
+    {
+        [<DateTimeFormat "yyyy-MM-dd">] dateOnly:DateTime
+    }
+
+Content.Json { dateOnly = DateTime.UtcNow }
+```
+{% endtab %}
+
+{% tab title="Output" %}
+```
+{ dateOnly: "2015-03-24" }
+```
+{% endtab %}
+{% endtabs %}
+
+{% tabs %}
+{% tab title="DateTime\#2" %}
+```fsharp
+[<NamedUnionCases>]
+type Action =
+    | [<DateTimeFormat("time", "HH.mm.ss")>] A of time:DateTime
+
+Content.Json (A (time=DateTime.UtcNow))
+```
+{% endtab %}
+
+{% tab title="Output" %}
+```
+{ time: "15.03.32" }
+```
+{% endtab %}
+{% endtabs %}
+
+Note, however, that `[<DateTimeFormat>]` is only available on the server side; this attribute is ignored by client-side serialization.
 
